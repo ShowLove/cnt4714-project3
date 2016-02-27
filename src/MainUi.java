@@ -14,8 +14,11 @@ public class MainUi {
     static final String PASSWORD= "password";
 
     static final String DEFAULT_QUERY = "SELECT * FROM bikes";
+    static final String SECOND_QUERY = "SELECT * FROM bikes where size = 60";
 
     private static ResultSetTableModel tableModel;
+
+    private String connectedUrl;
 
     public JTable resultTable;
     public JPanel resultsPanel;
@@ -23,13 +26,7 @@ public class MainUi {
 
     public MainUi() {
 
-        try {
-            tableModel = new ResultSetTableModel( JDBC_DRIVER, DATABASE_URL,USERNAME, PASSWORD, DEFAULT_QUERY );
-        } catch (SQLException er) {
-            er.printStackTrace();
-        } catch (ClassNotFoundException er) {
-            er.printStackTrace();
-        }
+        tableModel = new ResultSetTableModel();
 
         JFrame frame = new JFrame("SQL Client GUI");
         GridBagConstraints c = new GridBagConstraints();
@@ -58,6 +55,12 @@ public class MainUi {
         JScrollPane scrollPane = new JScrollPane(resultTable);
         resultsPanel.add(scrollPane);
         mainPanel.add(resultsPanel,c);
+
+        JPanel footerPanel = new JPanel(new GridBagLayout());
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+        mainPanel.add(footerPanel,c);
 
         // reset gridwith to 1 for other components
         c.gridwidth = 1;
@@ -129,11 +132,24 @@ public class MainUi {
         queryTextArea.setText(DEFAULT_QUERY);
         queryPanel.add(queryTextArea,c);
 
+        JButton clearResultButton = new JButton("Clear Result Window");
+        c.gridx = 0;
+        c.gridy = 0;
+        footerPanel.add(clearResultButton);
+        clearResultButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tableModel.removeAll();
+                resultTable.getTableHeader().setVisible(false);
+            }
+        });
 
         JLabel statusLabel = new JLabel("No Connection Now");
         c.gridx = 0;
-        c.gridy = 0;
-        buttonPanel.add(statusLabel,c);
+        c.gridy = 1;
+        footerPanel.add(statusLabel,c);
+
+
 
         JButton connectButton = new JButton("Connect to Database");
         c.gridx = 1;
@@ -142,6 +158,28 @@ public class MainUi {
         connectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String driver = driverComboBox.getSelectedItem().toString();
+                String url = urlComboBox.getSelectedItem().toString();
+                String user = userTextField.getText();
+                String pass = String.valueOf(passField.getPassword());
+
+                String query = queryTextArea.getText();
+                if (query.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame,"Please enter a query for first database connection","Message",JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    try {
+                        resultTable.getTableHeader().setVisible(true);
+                        tableModel.Connect(driver, url, user, pass, query);
+                        connectedUrl = tableModel.isConnectedToDatabase();
+
+                    } catch (SQLException er) {
+                        er.printStackTrace();
+                    } catch (ClassNotFoundException er) {
+                        er.printStackTrace();
+                    }
+
+                }
+
 
             }
         });
@@ -153,8 +191,7 @@ public class MainUi {
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tableModel.removeAll();
-                resultTable.getTableHeader().setVisible(false);
+                queryTextArea.setText("");
             }
         });
 
@@ -178,7 +215,6 @@ public class MainUi {
         c.gridx = 0;
         c.gridy = 1;
         buttonPanel.add(test,c);
-
 
         frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

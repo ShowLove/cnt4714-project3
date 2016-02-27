@@ -20,14 +20,22 @@ public class ResultSetTableModel extends AbstractTableModel
     private ResultSet resultSet;
     private ResultSetMetaData metaData;
     private int numberOfRows;
+    private String connectedUrl;
+
+    boolean haveQuery = false;
 
     // keep track of database connection status
     private boolean connectedToDatabase = false;
 
     // constructor initializes resultSet and obtains its meta data object;
     // determines number of rows
-    public ResultSetTableModel( String driver, String url,
-                                String username, String password, String query )
+    public ResultSetTableModel()
+    {
+
+    } // end constructor ResultSetTableModel
+
+    public void Connect( String driver, String url,
+                         String username, String password, String query)
             throws SQLException, ClassNotFoundException
     {
         // load database driver class
@@ -44,8 +52,11 @@ public class ResultSetTableModel extends AbstractTableModel
         // update database connection status
         connectedToDatabase = true;
 
+        connectedUrl = url;
+
         // set query and execute it
         setQuery( query );
+        fireTableStructureChanged();
 
         //set update and execute it
         //setUpdate (query);
@@ -56,7 +67,7 @@ public class ResultSetTableModel extends AbstractTableModel
     {
         // ensure database connection is available
         if ( !connectedToDatabase )
-            throw new IllegalStateException( "Not Connected to Database" );
+            return null;
 
         // determine Java class of column
         try
@@ -78,8 +89,9 @@ public class ResultSetTableModel extends AbstractTableModel
     public int getColumnCount() throws IllegalStateException
     {
         // ensure database connection is available
-        if ( !connectedToDatabase )
-            throw new IllegalStateException( "Not Connected to Database" );
+        if ( !connectedToDatabase){
+            return 0;
+        }
 
         // determine number of columns
         try
@@ -99,7 +111,7 @@ public class ResultSetTableModel extends AbstractTableModel
     {
         // ensure database connection is available
         if ( !connectedToDatabase )
-            throw new IllegalStateException( "Not Connected to Database" );
+            return "";
 
         // determine column name
         try
@@ -119,7 +131,7 @@ public class ResultSetTableModel extends AbstractTableModel
     {
         // ensure database connection is available
         if ( !connectedToDatabase )
-            throw new IllegalStateException( "Not Connected to Database" );
+            return 0;
 
         return numberOfRows;
     } // end method getRowCount
@@ -130,7 +142,7 @@ public class ResultSetTableModel extends AbstractTableModel
     {
         // ensure database connection is available
         if ( !connectedToDatabase )
-            throw new IllegalStateException( "Not Connected to Database" );
+            return null;
 
         // obtain a value at specified ResultSet row and column
         try
@@ -152,8 +164,7 @@ public class ResultSetTableModel extends AbstractTableModel
             throws SQLException, IllegalStateException
     {
         // ensure database connection is available
-        if ( !connectedToDatabase )
-            throw new IllegalStateException( "Not Connected to Database" );
+//        if ( !connectedToDatabase ) ;
 
         // specify query and execute it
         resultSet = statement.executeQuery( query );
@@ -176,8 +187,8 @@ public class ResultSetTableModel extends AbstractTableModel
     {
         int res;
         // ensure database connection is available
-        if ( !connectedToDatabase )
-            throw new IllegalStateException( "Not Connected to Database" );
+//        if ( !connectedToDatabase )
+//            throw new IllegalStateException( "Not Connected to Database" );
 
         // specify query and execute it
         res = statement.executeUpdate( query );
@@ -199,7 +210,12 @@ public class ResultSetTableModel extends AbstractTableModel
         fireTableStructureChanged();
     }
 
-
+    public String isConnectedToDatabase() {
+        if (connectedToDatabase) {
+            return connectedUrl;
+        }
+        return "False";
+    }
 
 
     // close Statement and Connection
