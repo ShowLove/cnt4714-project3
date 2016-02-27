@@ -1,3 +1,10 @@
+/**
+ * Name: James Bedont
+ * Course: CNT 4717 - Spring 2016
+ * Assignment title: Project 3 - Two-Tier Client-Server Application Development With MySQL and JDBC
+ * Date: Sunday February 28, 2016
+ */
+
 // A TableModel that supplies ResultSet data to a JTable.
 import java.sql.Connection;
 import java.sql.Statement;
