@@ -1,156 +1,156 @@
-// Display the results of queries against the bikes table in the bikedb database.
-import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import javax.swing.*;
+import java.awt.*;
 import java.sql.SQLException;
-import javax.swing.JFrame;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.JTable;
-import javax.swing.JOptionPane;
-import javax.swing.JButton;
-import javax.swing.Box;
 
-public class Main extends JFrame
-{
-    // JDBC driver, database URL, username and password
+/**
+ * Created by jamesbedont on 2/26/16.
+ */
+public class Main {
+
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DATABASE_URL = "jdbc:mysql://localhost:3306/bikedb?useSSL=false";
     static final String USERNAME= "root";
     static final String PASSWORD= "password";
 
-    // default query retrieves all data from bikes table
     static final String DEFAULT_QUERY = "SELECT * FROM bikes";
 
-    private ResultSetTableModel tableModel;
-    private JTextArea queryArea;
+    private static ResultSetTableModel tableModel;
 
-    // create ResultSetTableModel and GUI
-    public Main()
-    {
-        super( "Displaying Query Results" );
+    public static void main(String[] args) {
 
-        // create ResultSetTableModel and display database table
-        try
-        {
-            // create TableModel for results of query SELECT * FROM bikes
+        try {
             tableModel = new ResultSetTableModel( JDBC_DRIVER, DATABASE_URL,USERNAME, PASSWORD, DEFAULT_QUERY );
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-            // set up JTextArea in which user types queries
-            //	queryArea = new JTextArea( 3, 100);
-            queryArea = new JTextArea( DEFAULT_QUERY, 3, 100 );
-            queryArea.setWrapStyleWord( true );
-            queryArea.setLineWrap( true );
+        JFrame frame = new JFrame("SQL Client GUI");
+        GridBagConstraints c = new GridBagConstraints();
+        JPanel mainPanel = new JPanel(new GridBagLayout());
 
-            JScrollPane scrollPane = new JScrollPane( queryArea,
-                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
+        JPanel dbInfoPanel = new JPanel(new GridBagLayout());
+        c.gridx = 0;
+        c.gridy = 0;
+        mainPanel.add(dbInfoPanel,c);
 
-            // set up JButton for submitting queries
-            JButton submitButton = new JButton( "Submit Query" );
+        JPanel queryPanel = new JPanel(new GridBagLayout());
+        c.gridx = 1;
+        c.gridy = 0;
+        mainPanel.add(queryPanel,c);
 
-            // create Box to manage placement of queryArea and
-            // submitButton in GUI
-            Box box = Box.createHorizontalBox();
-            box.add( scrollPane );
-            box.add( submitButton );
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 2;
+        mainPanel.add(buttonPanel,c);
 
-            // create JTable delegate for tableModel
-            JTable resultTable = new JTable( tableModel );
+        JPanel resultsPanel = new JPanel(new GridBagLayout());
+        c.gridx = 0;
+        c.gridy = 2;
+        JTable resultTable = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(resultTable);
+        resultsPanel.add(scrollPane);
+        mainPanel.add(resultsPanel,c);
 
-            // place GUI components on content pane
-            add( box, BorderLayout.NORTH );
-            add( new JScrollPane( resultTable ), BorderLayout.CENTER );
+        // reset gridwith to 1 for other components
+        c.gridwidth = 1;
 
-            // create event listener for submitButton
-            submitButton.addActionListener(
 
-                    new ActionListener()
-                    {
-                        // pass query to table model
-                        public void actionPerformed( ActionEvent event )
-                        {
-                            // perform a new query
-                            try
-                            {
-                                tableModel.setQuery( queryArea.getText() );
-                            } // end try
-                            catch ( SQLException sqlException )
-                            {
-                                JOptionPane.showMessageDialog( null,
-                                        sqlException.getMessage(), "Database error",
-                                        JOptionPane.ERROR_MESSAGE );
+        JLabel dbInfoLabel = new JLabel("Enter Database Information");
+        c.gridx = 0;
+        c.gridy = 0;
+        dbInfoPanel.add(dbInfoLabel,c);
 
-                                // try to recover from invalid user query
-                                // by executing default query
-                                try
-                                {
-                                    tableModel.setQuery( DEFAULT_QUERY );
-                                    queryArea.setText( DEFAULT_QUERY );
-                                } // end try
-                                catch ( SQLException sqlException2 )
-                                {
-                                    JOptionPane.showMessageDialog( null,
-                                            sqlException2.getMessage(), "Database error",
-                                            JOptionPane.ERROR_MESSAGE );
+        JLabel driverLabel = new JLabel("JDBC Driver");
+        c.gridx = 0;
+        c.gridy = 1;
+        dbInfoPanel.add(driverLabel,c);
 
-                                    // ensure database connection is closed
-                                    tableModel.disconnectFromDatabase();
+        JComboBox driverComboBox = new JComboBox();
+        c.gridx = 1;
+        c.gridy = 1;
+        driverComboBox.setPreferredSize(new Dimension(150,30));
+        dbInfoPanel.add(driverComboBox,c);
 
-                                    System.exit( 1 ); // terminate application
-                                } // end inner catch
-                            } // end outer catch
-                        } // end actionPerformed
-                    }  // end ActionListener inner class
-            ); // end call to addActionListener
+        JLabel dbUrlLabel = new JLabel("Database URL");
+        c.gridx = 0;
+        c.gridy = 2;
+        dbInfoPanel.add(dbUrlLabel,c);
 
-            setSize( 600, 300 ); // set window size
-            setVisible( true ); // display window
-        } // end try
-        catch ( ClassNotFoundException classNotFound )
-        {
-            JOptionPane.showMessageDialog( null,
-                    "MySQL driver not found", "Driver not found",
-                    JOptionPane.ERROR_MESSAGE );
+        JComboBox urlComboBox = new JComboBox();
+        c.gridx = 1;
+        c.gridy = 2;
+        urlComboBox.setPreferredSize(new Dimension(150,30));
+        dbInfoPanel.add(urlComboBox,c);
 
-            System.exit( 1 ); // terminate application
-        } // end catch
-        catch ( SQLException sqlException )
-        {
-            JOptionPane.showMessageDialog( null, sqlException.getMessage(),
-                    "Database error", JOptionPane.ERROR_MESSAGE );
 
-            // ensure database connection is closed
-            tableModel.disconnectFromDatabase();
+        JLabel userLabel = new JLabel("Username");
+        c.gridx = 0;
+        c.gridy = 3;
+        dbInfoPanel.add(userLabel,c);
 
-            System.exit( 1 );   // terminate application
-        } // end catch
+        JTextField userTextField = new JTextField();
+        c.gridx = 1;
+        c.gridy = 3;
+        userTextField.setPreferredSize(new Dimension(150,30));
+        dbInfoPanel.add(userTextField,c);
 
-        // dispose of window when user quits application (this overrides
-        // the default of HIDE_ON_CLOSE)
-        setDefaultCloseOperation( DISPOSE_ON_CLOSE );
+        JLabel passLabel = new JLabel("Password");
+        c.gridx = 0;
+        c.gridy = 4;
+        dbInfoPanel.add(passLabel,c);
 
-        // ensure database connection is closed when user quits application
-        addWindowListener(
+        JPasswordField passField = new JPasswordField();
+        c.gridx = 1;
+        c.gridy = 4;
+        passField.setPreferredSize(new Dimension(150,30));
+        dbInfoPanel.add(passField,c);
 
-                new WindowAdapter()
-                {
-                    // disconnect from database and exit when window has closed
-                    public void windowClosed( WindowEvent event )
-                    {
-                        tableModel.disconnectFromDatabase();
-                        System.exit( 0 );
-                    } // end method windowClosed
-                } // end WindowAdapter inner class
-        ); // end call to addWindowListener
-    } // end Main constructor
+        JLabel sqlLabel = new JLabel("Enter a SQL Command");
+        c.gridx = 0;
+        c.gridy = 0;
+        queryPanel.add(sqlLabel,c);
 
-    // execute application
-    public static void main( String args[] )
-    {
-        new Main();
-    } // end main
-} // end class Main
+        JTextArea queryTextArea = new JTextArea();
+        c.gridx = 0;
+        c.gridy = 1;
+        queryTextArea.setPreferredSize(new Dimension(300,100));
+        queryPanel.add(queryTextArea,c);
+
+
+        JLabel statusLabel = new JLabel("No Connection Now");
+        c.gridx = 0;
+        c.gridy = 0;
+        buttonPanel.add(statusLabel,c);
+
+        JButton connectButton = new JButton("Connect to Database");
+        c.gridx = 1;
+        c.gridy = 0;
+        buttonPanel.add(connectButton,c);
+
+        JButton clearButton = new JButton("Clear Command");
+        c.gridx = 2;
+        c.gridy = 0;
+        buttonPanel.add(clearButton,c);
+
+        JButton executeButton = new JButton("Execute SQL Command");
+        c.gridx = 3;
+        c.gridy = 0;
+        buttonPanel.add(executeButton,c);
+
+        JLabel test = new JLabel("SQL Execution Result:");
+        c.gridx = 0;
+        c.gridy = 1;
+        buttonPanel.add(test,c);
+
+
+        frame.setContentPane(mainPanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+
+
+    }
+}
