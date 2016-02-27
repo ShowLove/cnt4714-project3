@@ -193,6 +193,12 @@ public class ResultSetTableModel extends AbstractTableModel
         fireTableStructureChanged();
     } // end method setUpdate
 
+    public void removeAll() {
+        fireTableRowsDeleted(-1,numberOfRows);
+        numberOfRows = 0;
+        fireTableStructureChanged();
+    }
+
 
 
 
