@@ -199,14 +199,14 @@ public class ResultSetTableModel extends AbstractTableModel
 
         // specify query and execute it
         res = statement.executeUpdate( query );
-/*
-      // obtain meta data for ResultSet
-      metaData = resultSet.getMetaData();
 
-      // determine number of rows in ResultSet
-      resultSet.last();                   // move to last row
-      numberOfRows = resultSet.getRow();  // get row number
-  */
+      // obtain meta data for ResultSet
+//      metaData = resultSet.getMetaData();
+//
+//      // determine number of rows in ResultSet
+//      resultSet.last();                   // move to last row
+//      numberOfRows = resultSet.getRow();  // get row number
+
         // notify JTable that model has changed
         fireTableStructureChanged();
     } // end method setUpdate

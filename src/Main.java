@@ -88,7 +88,13 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 try {
                     resultsTable.getTableHeader().setVisible(true);
-                    tableModel.setQuery(queryTextArea.getText());
+                    String[] queryArr = queryTextArea.getText().split(" ");
+                    if (queryArr[0].toLowerCase().contains("select")) {
+                        tableModel.setQuery(queryTextArea.getText());
+                    }
+                    else {
+                        tableModel.setUpdate(queryTextArea.getText());
+                    }
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                     JOptionPane.showMessageDialog(null, e1.getMessage(), "SQL Error Message", JOptionPane.INFORMATION_MESSAGE);
