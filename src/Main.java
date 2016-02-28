@@ -63,8 +63,10 @@ public class Main {
 
                     } catch (SQLException er) {
                         er.printStackTrace();
+                        JOptionPane.showMessageDialog(null, er.getMessage());
                     } catch (ClassNotFoundException er) {
                         er.printStackTrace();
+                        JOptionPane.showMessageDialog(null, er.getMessage());
                     }
 
                 }
