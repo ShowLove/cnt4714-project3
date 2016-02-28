@@ -30,8 +30,8 @@ public class Main {
     private JLabel statusLabel;
 
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String BIKE_URL = "jdbc:mysql://localhost:3306/bikedb?useSSL=false";
-    static final String PROJECT3_URL = "jdbc:mysql://localhost:3306/project3?useSSL=false";
+    static final String BIKE_URL = "jdbc:mysql://localhost:3306/bikedb";
+    static final String PROJECT3_URL = "jdbc:mysql://localhost:3306/project3";
     static final String USERNAME = "root";
     static final String PASSWORD = "password";
 
@@ -122,10 +122,10 @@ public class Main {
         urlComboBox.addItem(PROJECT3_URL);
         urlComboBox.addItem(BIKE_URL);
 
-        userTextField = new JTextField(USERNAME);
-        passwordField = new JPasswordField(PASSWORD);
+        userTextField = new JTextField("");
+        passwordField = new JPasswordField("");
 
-        queryTextArea = new JTextArea(DEFAULT_QUERY);
+        queryTextArea = new JTextArea("");
 
         statusLabel = new JLabel(connectedUrl);
     }

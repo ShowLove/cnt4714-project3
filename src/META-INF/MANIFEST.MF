@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: Main
+Class-Path: /Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/jre/lib/ext/mysql-connector-java-5.1.38-bin.jar
 
