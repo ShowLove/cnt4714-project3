@@ -42,7 +42,7 @@ public class ResultSetTableModel extends AbstractTableModel
     } // end constructor ResultSetTableModel
 
     public void Connect( String driver, String url,
-                         String username, String password, String query)
+                         String username, String password)
             throws SQLException, ClassNotFoundException
     {
         // load database driver class
@@ -62,8 +62,8 @@ public class ResultSetTableModel extends AbstractTableModel
         connectedUrl = url;
 
         // set query and execute it
-        setQuery( query );
-        fireTableStructureChanged();
+//        setQuery( query );
+//        fireTableStructureChanged();
 
         //set update and execute it
         //setUpdate (query);

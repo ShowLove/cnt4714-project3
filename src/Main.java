@@ -46,30 +46,27 @@ public class Main {
         dbConnectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 String driver = driverComboBox.getSelectedItem().toString();
                 String url = urlComboBox.getSelectedItem().toString();
                 String user = userTextField.getText();
                 String pass = String.valueOf(passwordField.getPassword());
 
-                String query = queryTextArea.getText();
-                if (query.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Please enter a query for first database connection", "Message", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    try {
-                        resultsTable.getTableHeader().setVisible(true);
-                        tableModel.Connect(driver, url, user, pass, query);
-                        connectedUrl = tableModel.isConnectedToDatabase();
-                        statusLabel.setText(connectedUrl);
+                try {
+                    resultsTable.getTableHeader().setVisible(true);
+                    tableModel.Connect(driver, url, user, pass);
+                    connectedUrl = tableModel.isConnectedToDatabase();
+                    statusLabel.setText(connectedUrl);
 
-                    } catch (SQLException er) {
-                        er.printStackTrace();
-                        JOptionPane.showMessageDialog(null, er.getMessage());
-                    } catch (ClassNotFoundException er) {
-                        er.printStackTrace();
-                        JOptionPane.showMessageDialog(null, er.getMessage());
-                    }
-
+                } catch (SQLException er) {
+                    er.printStackTrace();
+                    JOptionPane.showMessageDialog(null, er.getMessage());
+                } catch (ClassNotFoundException er) {
+                    er.printStackTrace();
+                    JOptionPane.showMessageDialog(null, er.getMessage());
                 }
+
+
             }
         });
         clearButton.addActionListener(new ActionListener() {
